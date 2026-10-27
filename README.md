@@ -7,7 +7,9 @@ Info: At the moment only german language because im german and this is the first
 How to Use
 
 1. Open the Tracker
+
 -Open the tracker using the link provided below.
+
 -Tracker Link: https://r3t4rt420.github.io/Bo7-Camo-Tracker-Android-/
 
 2. Select a Weapon
