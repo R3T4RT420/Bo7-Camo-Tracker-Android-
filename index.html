@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10131b">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" href="./icon.png">
+<title>BO7 Camo Tracker</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0e14;--panel:#151b26;--line:#293447;--orange:#ff6b00;--muted:#9ba8bb;--green:#20d997}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#f6f8fc;font:14px system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;padding:14px 15px;background:#10131bf5;border-bottom:1px solid var(--line)}
+h1{font-size:19px;margin:0;display:flex;align-items:center;gap:9px}
+.app-icon{width:30px;height:30px;object-fit:contain;flex-shrink:0}
+header small{color:var(--muted)}
+main{max-width:850px;margin:auto;padding:12px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px}
+.stat{padding:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:0}
+.stat b{display:block;font-size:20px}
+.stat span{font-size:11px;color:var(--muted)}
+.bar{height:5px;background:#30394a;border-radius:8px;margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);width:0;transition:width .25s}
+#classStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+#classStats .stat{padding:7px;font-size:11px;overflow-wrap:anywhere}
+#classStats .stat b{font-size:12px}
+#classStats .stat div{font-size:11px}
+nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12px 0}
+.mode,button,select,input{font:inherit}
+.mode,button{border:1px solid var(--line);border-radius:10px;background:#1c2533;color:white;padding:9px}
+.mode.active{background:var(--orange);border-color:var(--orange)}
+.filters{display:flex;gap:7px;margin-bottom:10px}
+.filters input,.filters select{width:50%;min-width:0;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:9px;color:white}
+.weapons{display:grid;gap:8px}
+.weapon-count{
+  font-size:12px;
+  color:var(--muted);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:7px 10px;
+  margin:-3px 0 10px;
+  text-align:center;
+}
+.weapon{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.weapon summary{padding:10px;display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+.weapon summary::-webkit-details-marker{display:none}
+.gun{width:65px;height:48px;flex-shrink:0;display:grid;place-items:center;background:#202b3b;border:1px solid #33445d;border-radius:8px;overflow:hidden}
+.weapon-img{width:100%;height:100%;object-fit:contain;display:block}
+.wmeta{flex:1;min-width:0}
+.wmeta b{display:block;font-size:14px;overflow-wrap:anywhere}
+.muted{font-size:11px;color:var(--muted)}
+.percent{font-size:12px;color:var(--green);white-space:nowrap}
+.camos{padding:0 10px 10px;display:grid;gap:6px}
+.section{color:#ffb06f;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:7px 2px 2px}
+.camo{display:flex;align-items:center;gap:9px;padding:8px;background:#0f141d;border-radius:9px}
+.camo input{width:18px;height:18px;accent-color:var(--green);flex-shrink:0}
+.swatch{width:42px;height:42px;border-radius:6px;border:1px solid #ffffff25;flex-shrink:0;overflow:hidden;background:#202b3b}
+.swatch img{width:100%;height:100%;object-fit:cover;display:block}
+.camotext{flex:1;min-width:0}
+.camotext b{font-size:12px}
+.camotext small{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:2px}
+.done .camotext b{text-decoration:line-through;color:#7d8a9d}
+.foot{font-size:11px;color:var(--muted);line-height:1.45;padding:12px 2px}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.actions button{flex:1}
+@media(min-width:650px){.weapons{grid-template-columns:1fr 1fr}.weapon{align-self:start}}
+@media(max-width:360px){.gun{width:52px;height:42px}.camo{gap:6px;padding:6px}.swatch{width:36px;height:36px}.mode{padding:8px 3px;font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+<h1><img class="app-icon" src="./icon.png" alt="BO7 Camo Tracker Icon"><span>BO7 <span style="color:#ff6b00">CAMO TRACKER</span></span></h1>
+<small>Vier Modi · Fortschritt lokal gespeichert</small>
+</header>
+<main>
+<section class="stats">
+<div class="stat"><b id="done">0</b><span>Erledigt</span></div>
+<div class="stat"><b id="total">0</b><span>Aufgaben</span></div>
+<div class="stat"><b id="pct">0%</b><span>Gesamtfortschritt</span><div class="bar"><i id="bar"></i></div></div>
+</section>
+<section class="stat" style="margin-bottom:10px">
+<b style="font-size:14px">Fortschritt nach Waffenklasse</b>
+<div id="classStats"></div>
+</section>
+<nav id="modes"></nav>
+
+<div class="filters">
+<input id="search" placeholder="Waffe suchen…">
+<select id="cat"><option value="">Alle Klassen</option></select>
+</div>
+<div id="weaponCount" class="weapon-count">
+Waffen angezeigt: 0
+</div>
+<div id="weapons" class="weapons"></div>
+<div class="stat" style="margin-top:12px">
+<b style="font-size:14px">Sicherung</b>
+<p class="muted">Exportiere deine Haken als Backup oder importiere sie auf einem anderen Gerät.</p>
+<div class="actions">
+<button id="export">Exportieren</button>
+<button id="importBtn">Importieren</button>
+<button id="reset">Reset</button>
+<input id="file" type="file" accept="application/json" hidden>
+</div>
+</div>
+<p class="foot">This app is work in progress. If there are any bugs, let me know on GitHub.<br>Copyright © R3T4RT</p>
+</main>
+<script>
+const modes=["Multiplayer","Zombies","Endgame","Warzone"];
+const classes=["Sturmgewehre","MPs","Schrotflinten","LMGs","Scharfschützengewehre","DMRs","Pistolen","Werfer","Spezial","Nahkampf"];
+
+const weaponData=[
+["M15 Mod 0","Sturmgewehre","M15-MOD-0.webp"],
+["AK-27","Sturmgewehre","AK-27.webp"],
+["Maddox RFB","Sturmgewehre","Maddox-RFB.webp"],
+["MXR-17","Sturmgewehre","MXR-17.webp"],
+["Peacekeeper MK1","Sturmgewehre","Peacekeeper-MK1.webp"],
+["X9 Maverick","Sturmgewehre","X9-Maverick.webp"],
+["MK35 ISR","Sturmgewehre","MK35-ISR.webp"],
+["EGRT-17","Sturmgewehre","EGRT-17.webp"],
+["Voyak KT3","Sturmgewehre","Voyak-KT3.webp"],
+["DS20 Mirage","Sturmgewehre","DS20-Mirage.webp"],
+["AN-94","Sturmgewehre","AN-94.webp"],
+["FG42","Sturmgewehre","FG42.webp"],
+["TR51 Para","Sturmgewehre","TR51-Para.webp"],
+["VX-Compact","Sturmgewehre","VX-Compact.webp"],
+["Dravec-45","MPs","Dravec-45.webp"],
+["VST","MPs","VST.webp"],
+["Razor-9mm","MPs","Razor-9mm.webp"],
+["Kogot-7","MPs","Kogot-7.webp"],
+["Carbon-57","MPs","Carbon-57.webp"],
+["CBRS-3","MPs","CBRS-3.webp"],
+["Gremlin","MPs","Gremlin.webp"],
+["MPC-25","MPs","MPC-25.webp"],
+["REV-46","MPs","REV-46.webp"],
+["RK-9","MPs","RK-9.webp"],
+["Ryden-45K","MPs","Ryden-45K.webp"],
+["Sturmwolf-45","MPs","Sturmwolf-45.webp"],
+["VMP","MPs","VMP.webp"],
+["M10 Breacher","Schrotflinten","M10-Breacher.webp"],
+["Akita","Schrotflinten","Akita.webp"],
+["Echo-12","Schrotflinten","Echo-12.webp"],
+["SG-12","Schrotflinten","SG-12.webp"],
+["MK-78","LMGs","MK-78.webp"],
+["XM325","LMGs","XM325.webp"],
+["Sokol-545","LMGs","Sokol-545.webp"],
+["Mammoth","LMGs","Mammoth.webp"],
+["VS-Recon","Scharfschützengewehre","VS-Recon.webp"],
+["Shadow-SK","Scharfschützengewehre","Shadow-SK.webp"],
+["XR3-ION","Scharfschützengewehre","XR3-ION.webp"],
+["Hawker-HX","Scharfschützengewehre","Hawker-HX.webp"],
+["Strider-300","Scharfschützengewehre","Strider-300.webp"],
+["M8A1","DMRs","M8A1.webp"],
+["Swordfish-A1","DMRs","Swordfish-A1.webp"],
+["KRS-7.62","DMRs","KRS-7.62.webp"],
+["M34 Novaline","DMRs","M34-Novaline.webp"],
+["Warden-308","DMRs","Warden-308.webp"],
+["1911-Pistol","Pistolen","1911-Pistol.webp"],
+["Coda-9","Pistolen","Coda-9.webp"],
+["Jäger-45","Pistolen","Jäger-45.webp"],
+["Velox-5.7","Pistolen","Velox-5.7.webp"],
+["ARC-M1","Werfer","ARC-M1.webp"],
+["AAROW-109","Werfer","AAROW-109.webp"],
+["NX-Ravager","Spezial","NX-Ravager.webp"],
+["GDL-Havoc","Spezial","GDL-Havoc.webp"],
+["Siren","Spezial","Siren.webp"],
+["Grimhawk","Spezial","Grimhawk.webp"],
+["ROC-20mm","Spezial","ROC-20mm.webp"],
+["Knife","Nahkampf","Knife.webp"],
+["Flatline-MK2","Nahkampf","Flatline-MK2.webp"],
+["Ballistic-Knife","Nahkampf","Ballistic-Knife.webp"],
+["H311-Saw","Nahkampf","H311-Saw.webp"],
+["Katana","Nahkampf","Katana.webp"],
+["Executioners-Duet","Nahkampf","Executioners-Duet.webp"],
+["Mace","Nahkampf","Mace.webp"],
+["MPC-25","MPs","MPC-25.webp"]
+];
+
+const camoFiles={
+Multiplayer:["01-UNTERHOLZ.webp","02-WALDUNG.webp","03-PLATTE DIGITAL.webp","04-MAMMUTBAUM.webp","05-GIFT.webp","06-GIFTIG.webp","07-BERG.webp","08-PIRSCHER.webp","09-RUBINSCHLANGE.webp","10-DIAMANT KLAPPERSCHLANGE.webp","11-RAPTOR.webp","12-HAUPTRECHNER.webp","13-BRUCHGOLD.webp","14-BOGENLICHT.webp","15-STURM.webp","16-SINGULARITÄT.webp"],
+Zombies:["01-ZEICHEN.webp","02-TUNDRA.webp","03-FLUT DIGITAL.webp","04-ZEDER.webp","05-SUMPFGEBIET.webp","06-MORAST.webp","07-SCHLUCHT.webp","08-SCHLEICHER.webp","09-SMARAGDSCHLANGE.webp","10-VERKRÜPPELN.webp","11-KRIECHEN.webp","12-PFADFINDER.webp","13-GOLDENER DRACHE.webp","14-BLUTSTEIN.webp","15-UNTERGANGSSTAHL.webp","16-VERSEUCHUNG.webp"],
+Endgame:["01-LAUB.webp","02-WÜSTE.webp","03-STADT DIGITAL.webp","04-PINIE.webp","05-WALD.webp","06-SCHLAMM.webp","07-PLATEAU.webp","08-NOKTURN.webp","09-TOPASSCHLANGE.webp","10-ZUNDER.webp","11-KAIMAN.webp","12-NETZWERK.webp","13-FLÜSSIGGOLD.webp","14-MONDSTEIN.webp","15-CHROMAFLUX.webp","16-GENESIS.webp"],
+Warzone:["01-HERBST.webp","02-ARKTIS.webp","03-WALD DIGITAL.webp","04-BALSAM.webp","05-AUSGEDÖRRT.webp","06-ÖL.webp","07-SCHNEEKAPPE.webp","08-JÄGER.webp","09-SAPHIERSCHLANGE.webp","10-SCHIMMER.webp","11-TYRANN.webp","12-VERFOLGUNG.webp","13-GOLDDAMAST.webp","14-STERNENGLAS.webp","15-ABSOLUTER NULLPUNKT.webp","16-APOKALYPSE.webp"]
+};
+
+const folderFor={Multiplayer:"mp",Zombies:"zm",Endgame:"eg",Warzone:"wz"};
+function camoPath(mode,i){return "./images/"+folderFor[mode]+"/"+encodeURIComponent(camoFiles[mode][i])}
+function camoName(mode,i){return camoFiles[mode][i].replace(/^\d+-/,"").replace(/\.webp$/i,"")}
+function weaponPath(w){return "./images/weapons/"+encodeURIComponent(w.image)}
+function challenge(mode,cls,i){
+if(i<9){
+if(mode==="Multiplayer"){
+if(cls==="Schrotflinten")return `${[5,10,20,30,40,50,60,70,80][i]} Kills aus nächster Nähe`;
+if(cls==="Scharfschützengewehre")return `${[5,10,20,30,40,50,60,70,80][i]} One-Shot-Kills`;
+return `${[5,10,20,30,40,50,60,70,80][i]} Kopfschüsse`;
+}
+if(mode==="Zombies"){
+if(cls==="Schrotflinten")return `${[100,200,300,400,500,600,700,800,1000][i]} Kills aus nächster Nähe`;
+return `${[100,200,300,400,500,600,700,800,900,1000][i]} kritische Kills`;
+}
+if(mode==="Endgame")return `${[10,25,50,75,100,125,150,200,250][i]} Eliminierungen`;
+return `${[5,10,20,30,40,50,60,80,100][i]} Eliminierungen`;
+}
+if(i<12)return "Spezielle Tarnungsaufgabe – Bedingung im Spiel prüfen";
+if(mode==="Multiplayer")return ["3 Kills ohne zu sterben, 10-mal","10 Doppelkills oder besser","5 Kills ohne zu sterben, 3-mal","Meisterschaftsaufgabe"][i-12]||"Meisterschaftsaufgabe";
+if(mode==="Zombies")return ["15-mal 10 schnelle Kills erzielen","20 oder mehr Kills hintereinander ohne Schaden, 5-mal","10 Elite-Zombies eliminieren","Meisterschaftsaufgabe"][i-12]||"Meisterschaftsaufgabe";
+if(mode==="Endgame")return ["20 Spezialgegner eliminieren","Gegner in hohen Zonen eliminieren","10 Elitegegner eliminieren","Meisterschaftsaufgabe"][i-12]||"Meisterschaftsaufgabe";
+return ["3 Kills in einem Match erzielen, 5-mal","5 Kills ohne zu sterben, 5-mal","10 Eliminierungen in den Top 10","Meisterschaftsaufgabe"][i-12]||"Meisterschaftsaufgabe";
+}
+function allCamos(mode,cls){
+return camoFiles[mode].map((f,i)=>({name:camoName(mode,i),desc:challenge(mode,cls,i),image:camoPath(mode,i),group:i<9?"Militär":i<12?"Spezial":"Meisterschaft",done:false}));
+}
+
+let state={mode:"Multiplayer",weapons:[]};
+const guns=weaponData.map(([name,cls,image])=>({name,cls,image}));
+function seed(){return guns.map(w=>({id:w.name,name:w.name,cls:w.cls,image:w.image,camos:Object.fromEntries(modes.map(m=>[m,allCamos(m,w.cls)]))}))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function load(){
+try{
+const x=JSON.parse(localStorage.getItem("bo7tracker_v3"));
+if(x&&Array.isArray(x.weapons)){
+state={mode:modes.includes(x.mode)?x.mode:"Multiplayer",weapons:[]};
+state.weapons=guns.map(g=>{
+const old=x.weapons.find(w=>w.name===g.name||w.id===g.name);
+const fresh=seed().find(w=>w.name===g.name);
+if(!old)return fresh;
+const camos={};
+modes.forEach(m=>{
+const oldC=old.camos?.[m]||[];
+camos[m]=fresh.camos[m].map((c,i)=>({...c,done:!!oldC[i]?.done}));
+});
+return {...fresh,...old,id:g.name,name:g.name,cls:g.cls,image:g.image,camos};
+});
+}else{
+const old=JSON.parse(localStorage.getItem("bo7tracker_v2"));
+if(old&&Array.isArray(old.weapons)){
+state.mode=modes.includes(old.mode)?old.mode:"Multiplayer";
+const fresh=seed();
+state.weapons=fresh.map(w=>{
+const o=old.weapons.find(a=>a.name===w.name||a.id===w.name);
+if(!o)return w;
+const camos={};
+modes.forEach(m=>{camos[m]=w.camos[m].map((c,i)=>({...c,done:!!o.camos?.[m]?.[i]?.done}))});
+return {...w,camos};
+});
+}else state.weapons=seed();
+}
+}catch(e){state.weapons=seed()}
+}
+function stats(){
+let d=0,t=0,by={};
+state.weapons.forEach(w=>{
+if(!by[w.cls])by[w.cls]={d:0,t:0};
+modes.forEach(m=>(w.camos[m]||[]).forEach(c=>{t++;by[w.cls].t++;if(c.done){d++;by[w.cls].d++}}));
+});
+document.querySelector("#done").textContent=d;
+document.querySelector("#total").textContent=t;
+document.querySelector("#pct").textContent=(t?Math.round(d/t*100):0)+"%";
+document.querySelector("#bar").style.width=(t?d/t*100:0)+"%";
+document.querySelector("#classStats").innerHTML=Object.entries(by).map(([n,v])=>`<div class="stat"><b>${esc(n)}</b><div>${v.d} / ${v.t} · ${v.t?Math.round(v.d/v.t*100):0}%</div><div class="bar"><i style="width:${v.t?v.d/v.t*100:0}%"></i></div></div>`).join("");
+}
+const modesEl=document.querySelector("#modes");
+const search=document.querySelector("#search");
+const cat=document.querySelector("#cat");
+const weapons=document.querySelector("#weapons");
+const filters=document.querySelector(".filters");
+const weaponCount=document.querySelector("#weaponCount");
+function render(){
+modesEl.innerHTML=modes.map(m=>`<button class="mode ${state.mode===m?"active":""}" data-mode="${esc(m)}">${esc(m)}</button>`).join("");
+modesEl.style.display = "";document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;save();render()});
+const q=search.value.toLowerCase().trim(),c=cat.value;
+const modeSelected = !!state.mode;
+const showWeapons = modeSelected || q.length > 0;
+cat.style.display = modeSelected ? "" : "none";
+weaponCount.style.display = showWeapons ? "" : "none";
+weapons.style.display = showWeapons ? "" : "none";
+const ws=state.weapons.filter(w=>w.name.toLowerCase().includes(q)&&(!c||w.cls===c));
+weaponCount.textContent=`Waffen angezeigt: ${ws.length}`;
+weapons.innerHTML=ws.map(w=>{
+const cs=w.camos[state.mode]||[];
+const d=cs.filter(x=>x.done).length;
+const groups=["Militär","Spezial","Meisterschaft"];
+return `<details class="weapon" data-weapon-id="${esc(w.id)}"><summary><div class="gun"><img class="weapon-img" src="${weaponPath(w)}" alt="${esc(w.name)}" loading="lazy" onerror="this.style.display='none';this.parentElement.textContent='Kein Bild'"></div><div class="wmeta"><b>${esc(w.name)}</b><div class="muted">${esc(w.cls)} · ${d}/${cs.length} Tarnungen</div><div class="bar"><i style="width:${cs.length?d/cs.length*100:0}%"></i></div></div><div class="percent">${cs.length?Math.round(d/cs.length*100):0}%</div></summary><div class="camos">${groups.map(g=>`<div class="section">${g}</div>`+cs.map((x,i)=>({...x,i})).filter(x=>x.group===g).map(x=>`<label class="camo ${x.done?"done":""}"><input type="checkbox" data-w="${esc(w.id)}" data-i="${x.i}" ${x.done?"checked":""}><div class="swatch"><img src="${x.image}" alt="${esc(x.name)}" loading="lazy" onerror="this.style.display='none'"></div><div class="camotext"><b>${esc(x.name)}</b><small>${esc(x.desc)}</small></div></label>`).join("")).join("")}</div></details>`;
+}).join("")||'<div class="stat">Keine Waffen gefunden.</div>';
+document.querySelectorAll("[data-w]").forEach(el=>el.onchange=()=>{
+const w=state.weapons.find(w=>w.id===el.dataset.w);
+if(!w)return;
+const camoIndex=+el.dataset.i;
+if(el.checked){
+for(let i=0;i<=camoIndex;i++)w.camos[state.mode][i].done=true;
+}else{
+w.camos[state.mode][camoIndex].done=false;
+}
+const id=w.id;
+save();
+render();
+const panel=document.querySelector(`[data-weapon-id="${CSS.escape(id)}"]`);
+if(panel)panel.open=true;
+});
+stats();
+}
+function save(){localStorage.setItem("bo7tracker_v3",JSON.stringify(state));stats()}
+cat.innerHTML+=classes.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+search.oninput=render;
+cat.onchange=render;
+document.querySelector("#export").onclick=()=>{
+const a=document.createElement("a");
+const u=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"}));
+a.href=u;a.download="bo7-camo-backup.json";a.click();
+setTimeout(()=>URL.revokeObjectURL(u),1000);
+};
+document.querySelector("#importBtn").onclick=()=>document.querySelector("#file").click();
+document.querySelector("#file").onchange=async e=>{
+try{
+const f=e.target.files[0];if(!f)return;
+const x=JSON.parse(await f.text());
+if(!Array.isArray(x.weapons))throw new Error("Ungültig");
+localStorage.setItem("bo7tracker_v3",JSON.stringify(x));
+load();save();render();alert("Import erfolgreich");
+}catch(e){alert("Datei ungültig oder nicht kompatibel")}
+e.target.value="";
+};
+document.querySelector("#reset").onclick=()=>{
+if(confirm("Alle Haken zurücksetzen?")){
+state.weapons=seed();save();render();
+}
+};
+load();
+state.mode = "";
+render();
+if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js");
+</script>
+</body>
+</html>

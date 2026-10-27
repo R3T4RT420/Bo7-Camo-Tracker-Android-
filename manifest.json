@@ -1,0 +1,18 @@
+
+{
+  "name": "BO7 Camo Tracker",
+  "short_name": "BO7 C-T",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#202020",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
