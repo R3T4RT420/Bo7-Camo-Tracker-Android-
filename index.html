@@ -8,27 +8,28 @@
 <link rel="icon" type="image/png" href="./icon.png">
 <title>BO7 Camo Tracker</title>
 <style>
-:root{color-scheme:dark;--bg:#0b0e14;--panel:#151b26;--line:#293447;--orange:#ff6b00;--muted:#9ba8bb;--green:#20d997}
+:root{color-scheme:dark;--bg:#000000;--panel:#181818;--line:#292929;--orange:#ff6b00;--muted:#9ba8bb;--green:#20d997}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#f6f8fc;font:14px system-ui,sans-serif}
-header{position:sticky;top:0;z-index:5;padding:14px 15px;background:#10131bf5;border-bottom:1px solid var(--line)}
+body{margin:0;background:var(--bg);color:#f6f8fc;font:15px system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;padding:9px 12px;background:#000000f5;border-bottom:1px solid var(--line)}
 h1{font-size:19px;margin:0;display:flex;align-items:center;gap:9px}
 .app-icon{width:30px;height:30px;object-fit:contain;flex-shrink:0}
 header small{color:var(--muted)}
 main{max-width:850px;margin:auto;padding:12px}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-bottom:10px}
 .stat{padding:11px;background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:0}
-.stat b{display:block;font-size:20px}
+.stat b{display:block;font-size:16px}
 .stat span{font-size:11px;color:var(--muted)}
-.bar{height:5px;background:#30394a;border-radius:8px;margin-top:7px;overflow:hidden}
+.bar{height:5px;background:#303030;border-radius:8px;margin-top:7px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--green);width:0;transition:width .25s}
 #classStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
 #classStats .stat{padding:7px;font-size:11px;overflow-wrap:anywhere}
 #classStats .stat b{font-size:12px}
 #classStats .stat div{font-size:11px}
+#classStats .stat b{font-size: 14px;}
 nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12px 0}
 .mode,button,select,input{font:inherit}
-.mode,button{border:1px solid var(--line);border-radius:10px;background:#1c2533;color:white;padding:9px}
+.mode,button{border:1px solid var(--line);border-radius:10px;background:#202020;color:white;padding:9px}
 .mode.active{background:var(--orange);border-color:var(--orange)}
 .filters{display:flex;gap:7px;margin-bottom:10px}
 .filters input,.filters select{width:50%;min-width:0;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:9px;color:white}
@@ -46,7 +47,7 @@ nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12
 .weapon{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .weapon summary{padding:10px;display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
 .weapon summary::-webkit-details-marker{display:none}
-.gun{width:65px;height:48px;flex-shrink:0;display:grid;place-items:center;background:#202b3b;border:1px solid #33445d;border-radius:8px;overflow:hidden}
+.gun{width:65px;height:48px;flex-shrink:0;display:grid;place-items:center;background:#202020;border:1px solid #333333;border-radius:8px;overflow:hidden}
 .weapon-img{width:100%;height:100%;object-fit:contain;display:block}
 .wmeta{flex:1;min-width:0}
 .wmeta b{display:block;font-size:14px;overflow-wrap:anywhere}
@@ -54,9 +55,9 @@ nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12
 .percent{font-size:12px;color:var(--green);white-space:nowrap}
 .camos{padding:0 10px 10px;display:grid;gap:6px}
 .section{color:#ffb06f;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:7px 2px 2px}
-.camo{display:flex;align-items:center;gap:9px;padding:8px;background:#0f141d;border-radius:9px}
+.camo{display:flex;align-items:center;gap:9px;padding:8px;background:#101010;border-radius:9px}
 .camo input{width:18px;height:18px;accent-color:var(--green);flex-shrink:0}
-.swatch{width:42px;height:42px;border-radius:6px;border:1px solid #ffffff25;flex-shrink:0;overflow:hidden;background:#202b3b}
+.swatch{width:42px;height:42px;border-radius:6px;border:1px solid #ffffff25;flex-shrink:0;overflow:hidden;background:#202020}
 .swatch img{width:100%;height:100%;object-fit:cover;display:block}
 .camotext{flex:1;min-width:0}
 .camotext b{font-size:12px}
@@ -67,6 +68,81 @@ nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12
 .actions button{flex:1}
 @media(min-width:650px){.weapons{grid-template-columns:1fr 1fr}.weapon{align-self:start}}
 @media(max-width:360px){.gun{width:52px;height:42px}.camo{gap:6px;padding:6px}.swatch{width:36px;height:36px}.mode{padding:8px 3px;font-size:12px}}
+#classPicker{
+  width:50%;
+  min-width:0;
+  text-align:left;
+  background:#202020;
+  padding:10px;
+}
+
+.class-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:#000000a6;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.class-overlay.open{
+  display:flex;
+}
+
+.class-popup{
+  width:100%;
+  max-width:360px;
+  max-height:80dvh;
+  overflow:hidden;
+  background:#111111;
+  border:1px solid #333333;
+  border-radius:14px;
+  box-shadow:0 12px 40px #00000080;
+}
+
+.class-popup-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:14px;
+  border-bottom:1px solid #303030;
+  font-size:15px;
+}
+
+.class-popup-header button{
+  background:#202020;
+  border:1px solid #383838;
+  padding:6px 10px;
+}
+
+.class-options{
+  overflow-y:auto;
+  max-height:calc(80dvh - 60px);
+  padding:8px;
+}
+
+.class-option{
+  display:block;
+  width:100%;
+  text-align:left;
+  border:1px solid transparent;
+  border-radius:8px;
+  background:#202020;
+  padding:12px;
+  margin-bottom:5px;
+}
+
+.class-option.selected{
+  background:#303030;
+  border-color:#404040;
+}
+
+.class-option:active{
+  background:#383838;
+         }
 </style>
 </head>
 <body>
@@ -78,17 +154,27 @@ nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12
 <section class="stats">
 <div class="stat"><b id="done">0</b><span>Erledigt</span></div>
 <div class="stat"><b id="total">0</b><span>Aufgaben</span></div>
-<div class="stat"><b id="pct">0%</b><span>Gesamtfortschritt</span><div class="bar"><i id="bar"></i></div></div>
+<div class="stat"><b id="pct">0%</b><span>Gesamt</span><div class="bar"><i id="bar"></i></div></div>
+<div class="stat"><b id="masteryDone">0/256</b><span>Mastery</span><div class="bar"><i id="masteryBar"></i></div></div>
 </section>
 <section class="stat" style="margin-bottom:10px">
-<b style="font-size:14px">Fortschritt nach Waffenklasse</b>
+<b style="font-size:18px">Fortschritt nach Waffenklasse</b>
 <div id="classStats"></div>
 </section>
 <nav id="modes"></nav>
 
 <div class="filters">
-<input id="search" placeholder="Waffe suchen…">
-<select id="cat"><option value="">Alle Klassen</option></select>
+  <input id="search" placeholder="Waffe suchen…">
+  <button id="classPicker" type="button">Alle Klassen ▾</button>
+</div>
+<div id="classOverlay" class="class-overlay">
+  <div class="class-popup">
+    <div class="class-popup-header">
+      <b>Waffenklasse auswählen</b>
+      <button id="closeClassPicker" type="button">✕</button>
+    </div>
+    <div id="classOptions" class="class-options"></div>
+  </div>
 </div>
 <div id="weaponCount" class="weapon-count">
 Waffen angezeigt: 0
@@ -258,21 +344,75 @@ document.querySelector("#done").textContent=d;
 document.querySelector("#total").textContent=t;
 document.querySelector("#pct").textContent=(t?Math.round(d/t*100):0)+"%";
 document.querySelector("#bar").style.width=(t?d/t*100:0)+"%";
+let masteryDone=0;
+let masteryTotal=0;
+state.weapons.forEach(w=>{
+  modes.forEach(m=>{
+    const cs=w.camos[m]||[];
+    if(cs.length){
+      masteryTotal++;
+      if(cs[cs.length-1].done) masteryDone++;
+    }
+  });
+});
+document.querySelector("#masteryDone").textContent=masteryDone+"/"+masteryTotal;
+document.querySelector("#masteryBar").style.width=(masteryTotal?masteryDone/masteryTotal*100:0)+"%";
 document.querySelector("#classStats").innerHTML=Object.entries(by).map(([n,v])=>`<div class="stat"><b>${esc(n)}</b><div>${v.d} / ${v.t} · ${v.t?Math.round(v.d/v.t*100):0}%</div><div class="bar"><i style="width:${v.t?v.d/v.t*100:0}%"></i></div></div>`).join("");
 }
 const modesEl=document.querySelector("#modes");
 const search=document.querySelector("#search");
-const cat=document.querySelector("#cat");
+const classPicker=document.querySelector("#classPicker");
+const classOverlay=document.querySelector("#classOverlay");
+const classOptions=document.querySelector("#classOptions");
+const closeClassPicker=document.querySelector("#closeClassPicker");
 const weapons=document.querySelector("#weapons");
+
+let selectedClass="";
+
+function renderClassOptions(){
+  classPicker.textContent=(selectedClass||"Alle Klassen")+" ▾";
+
+  classOptions.innerHTML=["",...classes].map(c=>`
+    <button type="button"
+      class="class-option ${selectedClass===c?"selected":""}"
+      data-class="${esc(c)}">
+      ${c||"Alle Klassen"}
+    </button>
+  `).join("");
+
+  classOptions.querySelectorAll("[data-class]").forEach(btn=>{
+    btn.onclick=()=>{
+      selectedClass=btn.dataset.class;
+      classOverlay.classList.remove("open");
+      renderClassOptions();
+      render();
+    };
+  });
+}
+
+classPicker.onclick=()=>{
+  renderClassOptions();
+  classOverlay.classList.add("open");
+};
+
+closeClassPicker.onclick=()=>{
+  classOverlay.classList.remove("open");
+};
+
+classOverlay.onclick=e=>{
+  if(e.target===classOverlay){
+    classOverlay.classList.remove("open");
+  }
+};
 const filters=document.querySelector(".filters");
 const weaponCount=document.querySelector("#weaponCount");
 function render(){
 modesEl.innerHTML=modes.map(m=>`<button class="mode ${state.mode===m?"active":""}" data-mode="${esc(m)}">${esc(m)}</button>`).join("");
 modesEl.style.display = "";document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;save();render()});
-const q=search.value.toLowerCase().trim(),c=cat.value;
+const q=search.value.toLowerCase().trim(),c=selectedClass;
 const modeSelected = !!state.mode;
 const showWeapons = modeSelected || q.length > 0;
-cat.style.display = modeSelected ? "" : "none";
+classPicker.style.display = modeSelected ? "" : "none";
 weaponCount.style.display = showWeapons ? "" : "none";
 weapons.style.display = showWeapons ? "" : "none";
 const ws=state.weapons.filter(w=>w.name.toLowerCase().includes(q)&&(!c||w.cls===c));
@@ -284,26 +424,46 @@ const groups=["Militär","Spezial","Meisterschaft"];
 return `<details class="weapon" data-weapon-id="${esc(w.id)}"><summary><div class="gun"><img class="weapon-img" src="${weaponPath(w)}" alt="${esc(w.name)}" loading="lazy" onerror="this.style.display='none';this.parentElement.textContent='Kein Bild'"></div><div class="wmeta"><b>${esc(w.name)}</b><div class="muted">${esc(w.cls)} · ${d}/${cs.length} Tarnungen</div><div class="bar"><i style="width:${cs.length?d/cs.length*100:0}%"></i></div></div><div class="percent">${cs.length?Math.round(d/cs.length*100):0}%</div></summary><div class="camos">${groups.map(g=>`<div class="section">${g}</div>`+cs.map((x,i)=>({...x,i})).filter(x=>x.group===g).map(x=>`<label class="camo ${x.done?"done":""}"><input type="checkbox" data-w="${esc(w.id)}" data-i="${x.i}" ${x.done?"checked":""}><div class="swatch"><img src="${x.image}" alt="${esc(x.name)}" loading="lazy" onerror="this.style.display='none'"></div><div class="camotext"><b>${esc(x.name)}</b><small>${esc(x.desc)}</small></div></label>`).join("")).join("")}</div></details>`;
 }).join("")||'<div class="stat">Keine Waffen gefunden.</div>';
 document.querySelectorAll("[data-w]").forEach(el=>el.onchange=()=>{
-const w=state.weapons.find(w=>w.id===el.dataset.w);
-if(!w)return;
-const camoIndex=+el.dataset.i;
-if(el.checked){
-for(let i=0;i<=camoIndex;i++)w.camos[state.mode][i].done=true;
-}else{
-w.camos[state.mode][camoIndex].done=false;
-}
-const id=w.id;
-save();
-render();
-const panel=document.querySelector(`[data-weapon-id="${CSS.escape(id)}"]`);
-if(panel)panel.open=true;
+  const w=state.weapons.find(w=>w.id===el.dataset.w);
+  if(!w)return;
+
+  const camoIndex=+el.dataset.i;
+  const cs=w.camos[state.mode];
+
+  if(el.checked){
+    for(let i=0;i<=camoIndex;i++){
+      cs[i].done=true;
+    }
+  }else{
+    cs[camoIndex].done=false;
+  }
+
+  const panel=el.closest(".weapon");
+  const checks=panel.querySelectorAll("[data-w]");
+  const done=cs.filter(c=>c.done).length;
+
+  panel.querySelector(".muted").textContent=
+    `${w.cls} · ${done}/${cs.length} Tarnungen`;
+
+  panel.querySelector(".bar i").style.width=
+    `${cs.length?done/cs.length*100:0}%`;
+
+  panel.querySelector(".percent").textContent=
+    `${cs.length?Math.round(done/cs.length*100):0}%`;
+
+  checks.forEach((check,i)=>{
+    check.checked=cs[i].done;
+    check.closest(".camo").classList.toggle("done",cs[i].done);
+  });
+
+  localStorage.setItem("bo7tracker_v3",JSON.stringify(state));
+  stats();
 });
 stats();
 }
 function save(){localStorage.setItem("bo7tracker_v3",JSON.stringify(state));stats()}
-cat.innerHTML+=classes.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
 search.oninput=render;
-cat.onchange=render;
+renderClassOptions();
 document.querySelector("#export").onclick=()=>{
 const a=document.createElement("a");
 const u=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"}));
